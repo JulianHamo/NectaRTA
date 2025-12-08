@@ -1244,7 +1244,12 @@ def make_body(
         n_bins=n_bins,
         suptitle_avg=suptitle_2d,
         suptitle_1d=suptitle_1d,
-        suptitle_pie=suptitle_step
+        suptitle_pie=suptitle_step,
+        titles_avg=ylabels_2d,
+        titles_1d=ylabels_1d,
+        titles_pie=ylabels_step,
+        labels_avg=ylabels_2d,
+        labels_1d=ylabels_1d,
     )
     
     # Skymaps

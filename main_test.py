@@ -497,7 +497,6 @@ def build_ui():
 
     # Build body (try passing the file if make_body accepts it)
     body_ret = None
-    print(CURRENT_FILE)
     try:
         # attempt call with file
         body_ret = make_body(CURRENT_FILE)
