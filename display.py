@@ -621,12 +621,15 @@ def make_averaged_histogram(
     n_runs=1,
     n_bins=default_n_bins,
     title=None,
-    label=None
+    label=None,
+    xaxis=None
 ):
     if title is None:
         title = childkey
     if label is None:
         label = childkey
+    if xaxis is None:
+        xaxis = label
     data = np.asarray(file[parentkey][childkey])
     if data.ndim != 2:
         data = np.zeros((data.shape[0],1))
@@ -644,7 +647,6 @@ def make_averaged_histogram(
     display = BokehPlot(
         title=title,
         tools=("xpan", "box_zoom", "wheel_zoom", "save", "reset"),
-        #tooltips=[("Count", "@{}".format(label))],
         active_drag="xpan",
         x_range=(current_data.data["edges"].min(), current_data.data["edges"].max()),
         toolbar_location="above"
@@ -653,7 +655,7 @@ def make_averaged_histogram(
     fig = display.figure
     fig.tools = [t for t in fig.tools if not isinstance(t, HoverTool)]
     fig.y_range.start = 0
-    fig.xaxis.axis_label = label.capitalize()
+    fig.xaxis.axis_label = xaxis.capitalize()
 
     r = fig.vbar(
         source=current_data,
@@ -693,6 +695,7 @@ def make_section_averaged_histogram_runs_only(
     n_bins=50,
     titles=None,
     labels=None,
+    xaxes=None
 ):
     """
     Create multiple averaged-histogram displays and a single slider that controls
@@ -713,10 +716,14 @@ def make_section_averaged_histogram_runs_only(
         titles = childkeys
     if labels is None:
         labels = childkeys
+    if xaxes is None:
+        xaxes = labels
     if not isinstance(titles, list):
         titles = [titles] * N
     if not isinstance(labels, list):
         labels = [labels] * N
+    if not isinstance(xaxes, list):
+        xaxes = [xaxes] * N
 
     # build displays
     displays = []
@@ -728,7 +735,8 @@ def make_section_averaged_histogram_runs_only(
             n_runs = n_runs,
             n_bins = n_bins,
             title = titles[i],
-            label = labels[i]
+            label = labels[i],
+            xaxis = xaxes[i]
         )
         displays.append(disp)
 
@@ -742,12 +750,15 @@ def make_histogram(
     parentkey,
     n_bins=default_n_bins,
     title=None,
-    label=None
+    label=None,
+    xaxis=None
 ):
     if title is None:
         title = childkey
     if label is None:
         label = childkey
+    if xaxis is None:
+        xaxis = label
     data = np.asarray(file[parentkey][childkey])
     if data.ndim != 1:
         data = np.zeros((data.shape[0]))
@@ -763,7 +774,6 @@ def make_histogram(
     display = BokehPlot(
         title=title,
         tools=("xpan", "box_zoom", "wheel_zoom", "save", "reset"),
-        #tooltips=[("Count", "@{}".format(label))],
         active_drag="xpan",
         x_range=(current_data.data["edges"].min(), current_data.data["edges"].max()),
         toolbar_location="above"
@@ -772,7 +782,7 @@ def make_histogram(
     fig = display.figure
     fig.tools = [t for t in fig.tools if not isinstance(t, HoverTool)]
     fig.y_range.start = 0
-    fig.xaxis.axis_label = label.capitalize()
+    fig.xaxis.axis_label = xaxis.capitalize()
 
     r = fig.vbar(
         source=current_data,
@@ -811,6 +821,7 @@ def make_histograms(
     n_bins=50,
     titles=None,
     labels=None,
+    xaxes=None,
     suptitle=None
 ):
     N = len(childkeys)
@@ -820,10 +831,14 @@ def make_histograms(
         titles = childkeys
     if labels is None:
         labels = childkeys
+    if xaxes is None:
+        xaxes = labels
     if not isinstance(titles, list):
         titles = [titles] * N
     if not isinstance(labels, list):
         labels = [labels] * N
+    if not isinstance(xaxes, list):
+        xaxes = [xaxes] * N
 
     displays = []
     for i in range(N):
@@ -833,7 +848,8 @@ def make_histograms(
             parentkey = parentkeys[i],
             n_bins = n_bins,
             title = titles[i],
-            label = labels[i]
+            label = labels[i],
+            xaxis=xaxes[i]
         )
         displays.append(disp)
 
@@ -891,9 +907,11 @@ def make_histogram_sections(
     n_bins=50,
     titles_avg=None,
     labels_avg=None,
+    xaxes_avg=None,
     suptitle_avg=None,
     titles_1d=None,
     labels_1d=None,
+    xaxes_1d=None,
     suptitle_1d=None
 ):
     histogram_avg_layout = make_section_averaged_histogram_runs_only(
@@ -904,6 +922,7 @@ def make_histogram_sections(
         n_bins=n_bins,
         titles=titles_avg,
         labels=labels_avg,
+        xaxes=xaxes_avg
     )
     histogram_1d_layout = make_histograms(
         file,
@@ -912,6 +931,7 @@ def make_histogram_sections(
         n_bins=n_bins,
         titles=titles_1d,
         labels=labels_1d,
+        xaxes=xaxes_1d,
         suptitle=suptitle_1d
     )
 
@@ -1114,9 +1134,11 @@ def make_full_histogram_sections(
     n_bins=50,
     titles_avg=None,
     labels_avg=None,
+    xaxes_avg=None,
     suptitle_avg=None,
     titles_1d=None,
     labels_1d=None,
+    xaxes_1d=None,
     suptitle_1d=None,
     titles_pie=None,
     suptitle_pie=None
@@ -1131,9 +1153,11 @@ def make_full_histogram_sections(
         n_bins=n_bins,
         titles_avg=titles_avg,
         labels_avg=labels_avg,
+        xaxes_avg=xaxes_avg,
         suptitle_avg=suptitle_avg,
         titles_1d=titles_1d,
         labels_1d=labels_1d,
+        xaxes_1d=xaxes_1d,
         suptitle_1d=suptitle_1d
     )
     annulii_layout = make_annulii(
@@ -1185,6 +1209,15 @@ def make_body(
     suptitle_2d="Raw camera data",
     suptitle_1d="Hillas parameters",
     suptitle_step="Event monitoring",
+    labels_2d=["image", "peak_time"],
+    labels_1d=[
+        "hillas_x", "hillas_y",
+        "hillas_phi", "hillas_width",
+        "hillas_length", "hillas_intensity",
+        "total_intensity",
+        "hillas_r", "hillas_psi",
+        "hillas_skewness", "hillas_kurtosis"
+    ],
     n_runs=default_n_runs,
     n_bins=default_n_bins,
     labels_colorbar=["p.e.", "ns"]
@@ -1236,8 +1269,10 @@ def make_body(
         titles_avg=ylabels_2d,
         titles_1d=ylabels_1d,
         titles_pie=ylabels_step,
-        labels_avg=ylabels_2d,
-        labels_1d=ylabels_1d,
+        labels_avg=labels_2d,
+        labels_1d=labels_1d,
+        xaxes_avg=ylabels_2d,
+        xaxes_1d=ylabels_1d
     )
     
     # Skymaps

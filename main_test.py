@@ -150,7 +150,11 @@ def _recompute_hist_and_update_source(disp, parentkey, childkey, label, n_runs, 
 
         # Attempt in-place update:
         # 1) If display has attribute 'source', use it
-        if hasattr(disp, "source") and isinstance(disp.source, ColumnDataSource):
+        #print(disp.figure.renderers[0].data_source.data.keys())
+        if (
+            hasattr(disp.figure, "source") 
+            and isinstance(disp.figure.source, ColumnDataSource)
+           ):
             # update with conventional keys if available
             try:
                 # preserve column name if label used
