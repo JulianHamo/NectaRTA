@@ -138,14 +138,14 @@ def _recompute_hist_and_update_source(disp, parentkey, childkey, label, n_runs, 
         if arr.ndim == 0:
             sample = np.array([arr])
         elif arr.ndim == 1:
-            n_runs_use = max(1, min(int(n_runs), arr.shape[0]))
-            sample = arr[-n_runs_use:]
+            sample = arr[-n_runs:]
         else:
-            n_runs_use = max(1, min(int(n_runs), arr.shape[0]))
-            sample = arr[-n_runs_use:].ravel()
+            sample = arr[-n_runs:].ravel()
 
         n_bins = max(1, int(n_bins))
         hist, edges = np.histogram(sample, bins=n_bins)
+        if arr.ndim > 1:
+            hist //= n_runs
         centers = (edges[:-1] + edges[1:]) / 2.0
 
         # Attempt in-place update:
