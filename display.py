@@ -63,18 +63,6 @@ def make_header_menu(ressource_path, file=None):
         file = get_latest_file(ressource_path)
     list_file = list_runs(ressource_path)
     run_choice_slidedown = make_select_run(list_file)
-
-    #def _on_select_change(attr, old, new):
-    #    new_filename = run_choice_slidedown.value
-    #    if new_filename == real_time_tag:
-    #        filepath = max(Path(ressource_path).glob("*.h5"), key=lambda f: f.stat().st_mtime)
-    #    else:
-    #        filepath = os.path.join(ressource_path, new_filename + ".h5")
-    #    file = h5py.File(filepath, "r")
-    #    return file
-
-    #run_choice_slidedown.on_change("value", _on_select_change)
-    #file = _on_select_change(None, None, None)
         
     status_div = make_status_div(file)
     return run_choice_slidedown, status_div
@@ -1179,13 +1167,13 @@ def make_body(
     ylabels_1d=[
         "Hillas: x [unit]",
         "Hillas: y [unit]",
-        "Hillas: &#966; [unit]",
+        "Hillas: phi [unit]",
         "Hillas: width [unit]",
         "Hillas: length [unit]",
         "Hillas: maximum intensity [unit]",
         "Hillas: total intensity [unit]",
         "Hillas: radius [unit]",
-        "Hillas: &#968; [unit]",
+        "Hillas: psi [unit]",
         "Hillas: skewness [unit]",
         "Hillas: kurtosis [unit]",
     ],

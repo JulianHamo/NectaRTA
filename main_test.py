@@ -342,6 +342,15 @@ def update_figures():
             print("update_figures: update failed for display meta=", meta, "error=", e)
             traceback.print_exc()
 
+def update_timestamp():
+    ts = time.strftime('%H:%M:%S')
+    print(f"Real time mode: updating figure - {ts}")
+    STATUS_DIV.children[1].text = f"Last update: {ts}"
+
+def periodic_update():
+    update_figures()
+    update_timestamp()
+
 
 # ----------------------------
 # Periodic callback management
@@ -350,7 +359,7 @@ def start_periodic_updates(interval_ms=DEFAULT_UPDATE_MS):
     global PERIODIC_CB_ID
     if PERIODIC_CB_ID is not None:
         return
-    PERIODIC_CB_ID = curdoc().add_periodic_callback(update_figures, interval_ms)
+    PERIODIC_CB_ID = curdoc().add_periodic_callback(periodic_update, interval_ms)
     print(f"Periodic updates started (id={PERIODIC_CB_ID}, interval_ms={interval_ms})")
 
 
