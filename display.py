@@ -1175,8 +1175,8 @@ def make_body(
     parentkeys_monitoring="dl1/event/telescope/parameters/tel_001",
     label_2d_timeline=["Min", "Mean", "Median", "Max"],
     func_timeline=[np.min, np.mean, np.median, np.max],
-    ylabel_2d=["Image [p.e.]", "Peak time [ns]"],
-    ylabel_1d=[
+    ylabels_2d=["Image [p.e.]", "Peak time [ns]"],
+    ylabels_1d=[
         "Hillas: x [unit]",
         "Hillas: y [unit]",
         "Hillas: &#966; [unit]",
@@ -1189,7 +1189,7 @@ def make_body(
         "Hillas: skewness [unit]",
         "Hillas: kurtosis [unit]",
     ],
-    ylabel_step=[
+    ylabels_step=[
         "Event type",
         "Is good event",
         "Event quality"
@@ -1226,9 +1226,9 @@ def make_body(
         suptitle_2d=suptitle_2d,
         suptitle_1d=suptitle_1d,
         suptitle_step=suptitle_step,
-        #ylabel_2d=ylabel_2d,
-        #ylabel_1d=ylabel_1d,
-        #ylabel_step=ylabel_step,
+        ylabels_2d=ylabels_2d,
+        ylabels_1d=ylabels_1d,
+        ylabels_step=ylabels_step,
     )
     
     # Histograms
