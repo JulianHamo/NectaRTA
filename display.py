@@ -152,6 +152,28 @@ def make_camera_display_params(show_hillas=False, label=None):
         label = "Show Hillas ellipse:"
     return Switch(active=show_hillas, label=label)
 
+def get_hillas_parameters(
+    file,
+    parameterkeys={
+        "parentkey":"dl1/event/telescope/parameters/tel_001",
+        "hillas_x_key":"hillas_x",
+        "hillas_y_key":"hillas_y",
+        "hillas_length_key":"hillas_length",
+        "hillas_width_key":"hillas_width",
+        "hillas_phi_key":"hillas_phi",
+    },
+    run=None
+):
+    if run is None:
+        run = -1
+    x=file[parameterkeys["parentkey"]][parameterkeys["hillas_x_key"]][run]
+    y=file[parameterkeys["parentkey"]][parameterkeys["hillas_y_key"]][run]
+    width=file[parameterkeys["parentkey"]][parameterkeys["hillas_length_key"]][run]
+    height=file[parameterkeys["parentkey"]][parameterkeys["hillas_width_key"]][run]
+    angle=file[parameterkeys["parentkey"]][parameterkeys["hillas_phi_key"]][run]
+    return x, y, width, height, angle
+    
+
 def make_camera_display(
     file,
     childkey,
@@ -186,12 +208,16 @@ def make_camera_display(
         print("KeyError")
         image = np.zeros(shape=constants.N_PIXELS)
         display.image = image
+
+    x, y, width, height, angle = get_hillas_parameters(
+        file, parameterkeys=parameterkeys, run=run
+    )
     ellipse = Ellipse(
-        x=file[parameterkeys["parentkey"]][parameterkeys["hillas_x_key"]][run],
-        y=file[parameterkeys["parentkey"]][parameterkeys["hillas_y_key"]][run],
-        width=file[parameterkeys["parentkey"]][parameterkeys["hillas_length_key"]][run],
-        height=file[parameterkeys["parentkey"]][parameterkeys["hillas_width_key"]][run],
-        angle=file[parameterkeys["parentkey"]][parameterkeys["hillas_phi_key"]][run],
+        x=x,
+        y=y,
+        width=width,
+        height=height,
+        angle=angle,
         fill_color=None,
         line_color="#40E0D0",
         line_width=2,

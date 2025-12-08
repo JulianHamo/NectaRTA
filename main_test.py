@@ -26,7 +26,8 @@ from bokeh.plotting import figure
 
 # Import what we expect from your display module
 from display import (
-get_latest_file,
+    get_hillas_parameters,
+    get_latest_file,
     make_header_menu,
     make_body,
     DISPLAY_REGISTRY,
@@ -142,7 +143,6 @@ def _recompute_hist_and_update_source(disp, parentkey, childkey, label, n_runs, 
         else:
             sample = arr[-n_runs:].ravel()
 
-        n_bins = max(1, int(n_bins))
         hist, edges = np.histogram(sample, bins=n_bins)
         if arr.ndim > 1:
             hist //= n_runs
@@ -151,21 +151,21 @@ def _recompute_hist_and_update_source(disp, parentkey, childkey, label, n_runs, 
         # Attempt in-place update:
         # 1) If display has attribute 'source', use it
         #print(disp.figure.renderers[0].data_source.data.keys())
-        if (
-            hasattr(disp.figure, "source") 
-            and isinstance(disp.figure.source, ColumnDataSource)
-           ):
-            # update with conventional keys if available
-            try:
-                # preserve column name if label used
-                disp.source.data = {label: hist.astype(int), "edges": centers}
-                # try to update glyph width if we can find renderer
-                for r in getattr(disp.figure, "renderers", []):
-                    if hasattr(r.glyph, "width"):
-                        r.glyph.width = 0.9 * (edges[1] - edges[0]) if len(edges) > 1 else 1.0
-                return
-            except Exception as e:
-                print("_recompute_hist_and_update_source: error updating disp.source:", e)
+        #if (
+        #    hasattr(disp.figure, "source") 
+        #    and isinstance(disp.figure.source, ColumnDataSource)
+        #   ):
+        #    # update with conventional keys if available
+        #    try:
+        #        # preserve column name if label used
+        #        disp.source.data = {label: hist.astype(int), "edges": centers}
+        #        # try to update glyph width if we can find renderer
+        #        for r in getattr(disp.figure, "renderers", []):
+        #            if hasattr(r.glyph, "width"):
+        #               r.glyph.width = 0.9 * (edges[1] - edges[0]) if len(edges) > 1 else 1.0
+        #        return
+        #    except Exception as e:
+        #        print("_recompute_hist_and_update_source: error updating disp.source:", e)
 
         # 2) Attempt to locate a vbar source inside the figure
         ds = _get_vbar_source_from_figure(disp.figure)
@@ -185,30 +185,40 @@ def _recompute_hist_and_update_source(disp, parentkey, childkey, label, n_runs, 
                 print("_recompute_hist_and_update_source: error updating located CDS:", e)
 
         # 3) Fallback: replace the figure entirely by redrawing a simple histogram into disp.figure
-        try:
-            disp.figure.renderers = []  # clear old glyphs
-            p = disp.figure
-            width = (edges[1] - edges[0]) if len(edges) > 1 else 1.0
-            p.vbar(x=centers, top=hist, width=0.9 * width, line_color="navy", fill_color=None)
-            p.x_range.start = centers.min() if len(centers) else 0
-            p.x_range.end = centers.max() if len(centers) else 1
-            p.y_range.start = 0
-            return
-        except Exception as e:
-            print("_recompute_hist_and_update_source: fallback redraw failed:", e)
-            return
+        #try:
+        #    disp.figure.renderers = []  # clear old glyphs
+        #    p = disp.figure
+        #    width = (edges[1] - edges[0]) if len(edges) > 1 else 1.0
+        #    p.vbar(x=centers, top=hist, width=0.9 * width, line_color="navy", fill_color=None)
+        #    p.x_range.start = centers.min() if len(centers) else 0
+        #    p.x_range.end = centers.max() if len(centers) else 1
+        #    p.y_range.start = 0
+        #    return
+        #except Exception as e:
+        #    print("_recompute_hist_and_update_source: fallback redraw failed:", e)
+        #    return
 
     except Exception as e:
         print("_recompute_hist_and_update_source: unexpected error:", e)
         traceback.print_exc()
 
+def update_hillas_ellipse(ellipse, file, parameterkeys, run_index):
+    ellipse.x, ellipse.y, ellipse.width, ellipse.height, ellipse.angle = get_hillas_parameters(
+        file, parameterkeys=parameterkeys, run=run_index
+    )
 
-def _recompute_camera_display(disp, parentkey, childkey, run_index):
+def _recompute_camera_display(disp, parentkey, childkey, parameterkeys, run_index):
     """Update camera display's .image if available."""
     global CURRENT_FILE
     if CURRENT_FILE is None:
         return
     try:
+        update_hillas_ellipse(
+            disp.figure.renderers[1].glyph,
+            CURRENT_FILE,
+            parameterkeys=parameterkeys,
+            run_index=run_index
+        )
         imgds = CURRENT_FILE[parentkey][childkey]
         # try to index safely
         try:
@@ -322,7 +332,8 @@ def update_figures():
                 run_index = int(run_widget.value) if getattr(run_widget, "value", None) is not None else -1
                 parent = meta.get("image_parentkey") or meta.get("parentkey")
                 child = meta.get("childkey")
-                _recompute_camera_display(disp, parent, child, run_index)
+                param = meta.get("parameterkeys")
+                _recompute_camera_display(disp, parent, child, param, run_index)
 
             elif dtype.startswith("timeline"):
                 parent = meta.get("parentkey")
