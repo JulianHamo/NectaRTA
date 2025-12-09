@@ -139,7 +139,7 @@ def _recompute_hist_and_update_source(disp, parentkey, childkey, label, n_runs, 
         if arr.ndim == 0:
             sample = np.array([arr])
         elif arr.ndim == 1:
-            sample = arr[-n_runs:]
+            sample = arr
         else:
             sample = arr[-n_runs:].ravel()
 
@@ -148,34 +148,15 @@ def _recompute_hist_and_update_source(disp, parentkey, childkey, label, n_runs, 
             hist //= n_runs
         centers = (edges[:-1] + edges[1:]) / 2.0
 
-        # Attempt in-place update:
-        # 1) If display has attribute 'source', use it
-        #print(disp.figure.renderers[0].data_source.data.keys())
-        #if (
-        #    hasattr(disp.figure, "source") 
-        #    and isinstance(disp.figure.source, ColumnDataSource)
-        #   ):
-        #    # update with conventional keys if available
-        #    try:
-        #        # preserve column name if label used
-        #        disp.source.data = {label: hist.astype(int), "edges": centers}
-        #        # try to update glyph width if we can find renderer
-        #        for r in getattr(disp.figure, "renderers", []):
-        #            if hasattr(r.glyph, "width"):
-        #               r.glyph.width = 0.9 * (edges[1] - edges[0]) if len(edges) > 1 else 1.0
-        #        return
-        #    except Exception as e:
-        #        print("_recompute_hist_and_update_source: error updating disp.source:", e)
-
-        # 2) Attempt to locate a vbar source inside the figure
         ds = _get_vbar_source_from_figure(disp.figure)
         if isinstance(ds, ColumnDataSource):
             try:
                 # heuristics: some code expects keys 'counts' and 'edges' or label and 'edges'
-                if "counts" in ds.data:
-                    ds.data = dict(counts=hist.astype(int), edges=centers)
-                else:
-                    ds.data = {label: hist.astype(int), "edges": centers}
+                #if "counts" in ds.data:
+                #    print("AAAAAAAAAAAAA")
+                #    ds.data = dict(counts=hist.astype(int), edges=centers)
+                #else:
+                ds.data = {label: hist.astype(int), "edges": centers}
                 # update glyph widths
                 for r in getattr(disp.figure, "renderers", []):
                     if hasattr(r.glyph, "width"):
@@ -183,20 +164,6 @@ def _recompute_hist_and_update_source(disp, parentkey, childkey, label, n_runs, 
                 return
             except Exception as e:
                 print("_recompute_hist_and_update_source: error updating located CDS:", e)
-
-        # 3) Fallback: replace the figure entirely by redrawing a simple histogram into disp.figure
-        #try:
-        #    disp.figure.renderers = []  # clear old glyphs
-        #    p = disp.figure
-        #    width = (edges[1] - edges[0]) if len(edges) > 1 else 1.0
-        #    p.vbar(x=centers, top=hist, width=0.9 * width, line_color="navy", fill_color=None)
-        #    p.x_range.start = centers.min() if len(centers) else 0
-        #    p.x_range.end = centers.max() if len(centers) else 1
-        #    p.y_range.start = 0
-        #    return
-        #except Exception as e:
-        #    print("_recompute_hist_and_update_source: fallback redraw failed:", e)
-        #    return
 
     except Exception as e:
         print("_recompute_hist_and_update_source: unexpected error:", e)
