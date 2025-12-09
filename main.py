@@ -23,6 +23,7 @@ from bokeh.layouts import row, column, Column
 from bokeh.models import Select, Div
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
+from bokeh.palettes import Inferno
 
 # Import what we expect from your display module
 from display import (
@@ -169,6 +170,32 @@ def _recompute_hist_and_update_source(disp, parentkey, childkey, label, n_runs, 
         print("_recompute_hist_and_update_source: unexpected error:", e)
         traceback.print_exc()
 
+def _recompute_annulus(disp, parentkey, childkey):
+    global CURRENT_FILE
+    try:
+        if CURRENT_FILE is None:
+            return
+
+        # read dataset robustly
+        try:
+            arr = np.asarray(CURRENT_FILE[parentkey][childkey])
+        except Exception as e:
+            # dataset missing or unreadable => nothing to update
+            print(f"_recompute_annulus: failed read {parentkey}/{childkey}: {e}")
+            return
+
+        group, counts = np.unique(arr, return_counts=True)
+        angles = np.concatenate(([0], 2 * np.pi * np.cumsum(counts) / np.sum(counts)))
+        source = disp.figure.renderers[0].data_source
+        source.data.start = angles[:-1]
+        source.data.end = angles[1:]
+        source.data.colors = Inferno[len(group)+2][1:-1]
+        source.data.counts = counts
+       
+    except Exception as e:
+        print("_recompute_annulus: unexpected error:", e)
+        traceback.print_exc()
+
 def update_hillas_ellipse(ellipse, file, parameterkeys, run_index):
     ellipse.x, ellipse.y, ellipse.width, ellipse.height, ellipse.angle = get_hillas_parameters(
         file, parameterkeys=parameterkeys, run=run_index
@@ -292,6 +319,11 @@ def update_figures():
                 n_bins = int(n_bins_widget.value) if getattr(n_bins_widget, "value", None) is not None else meta.get("n_bins", 50)
 
                 _recompute_hist_and_update_source(disp, parent, child, label, n_runs, n_bins)
+
+            if dtype == "annulus":
+                parent = meta.get("parentkey")
+                child = meta.get("childkey")
+                _recompute_annulus(disp, parent, child)
 
             elif dtype == "camera":
                 # choose run index from widget if present
