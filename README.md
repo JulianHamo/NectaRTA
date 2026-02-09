@@ -1,7 +1,4 @@
 # NectaRTA
-<<<<<<< HEAD
-Real time analysis bokeh pipeline for CTAO MST NectarCAM
-=======
 
 Repository for the Bokeh webpage application used for the visualisation of the Real Time Analysis of the NectarCAM camera of the MST of the [CTAO](https://www.ctao.org/).
 The application displays different quantities from R0 format of data to DL3. The frontent relies on the RTA pipeline (*insert link when available*).
@@ -24,4 +21,3 @@ bokeh serve --show main.py
 ## Report issue
 
 For any issue, please contact directly the developer at julian.hamo@ijclab.in2p3.fr.
->>>>>>> master
