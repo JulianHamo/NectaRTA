@@ -6,7 +6,6 @@ This module builds the high level builders for Bokeh webpage of the RTA of Necta
 """
 
 # imports
-import numpy as np
 from functools import partial
 
 # Bokeh imports
