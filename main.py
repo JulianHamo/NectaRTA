@@ -25,6 +25,8 @@ REAL_TIME_TAG = json_dict["REAL_TIME_TAG"]
 DEFAULT_UPDATE_MS = json_dict["DEFAULT_UPDATE_MS"]
 RESSOURCE_PATH = json_dict["RESSOURCE_PATH"]
 DEFAULT_EXTENSION = json_dict["DEFAULT_EXTENSION"]
+time_parentkeys = json_dict["time_parentkeys"]
+time_childkeys = json_dict["time_childkeys"]
 
 # Bokeh item storages
 display_registry = []
@@ -60,6 +62,8 @@ header_ret = build_ui(
     real_time_tag = REAL_TIME_TAG,
     default_update_ms = DEFAULT_UPDATE_MS,
     extension = DEFAULT_EXTENSION,
+    time_parentkeys=time_parentkeys,
+    time_childkeys=time_childkeys,
     **make_body_kwargs
 )
 
