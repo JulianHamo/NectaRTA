@@ -389,7 +389,6 @@ def build_ui(
     header_ret = make_header_menu(ressource_path, real_time_tag, file, extension=extension)
     header_select, status_col = header_ret[0], header_ret[1]
 
-
     # If no select found, create a simple select as fallback
     if header_select is None:
         header_select = Select(title="Run", value=real_time_tag, options=[real_time_tag])
@@ -407,12 +406,6 @@ def build_ui(
     
     # Build body (try passing the file if make_body accepts it)
     body_ret = None
-    body_ret = make_body(
-        file=file, 
-        display_registry=display_registry,
-        widgets=widgets,
-        **body_kwargs
-    )
     try:
         # attempt call with file
         body_ret = make_body(
@@ -431,6 +424,7 @@ def build_ui(
         body_ret,
         sizing_mode="scale_width"
         )
+
     curdoc().add_root(root_layout)
 
     # wire select callback
