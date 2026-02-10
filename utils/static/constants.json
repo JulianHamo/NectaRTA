@@ -3,5 +3,7 @@
     "DEFAULT_UPDATE_MS": 1000,
     "RESSOURCE_PATH": "example_data",
     "NPIXELS": 1855,
-    "DEFAULT_EXTENSION": ".h5"
+    "DEFAULT_EXTENSION": ".h5",
+    "time_parentkeys": ["dl1/event/telescope/images/tel_001"],
+    "time_childkeys": ["trigger_time"]
 }

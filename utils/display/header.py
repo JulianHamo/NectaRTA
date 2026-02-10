@@ -108,6 +108,7 @@ def _on_header_select_change(
         status_col=None,
         real_time_tag=None, default_update_ms=None,
         display_registry=None, widgets=None,
+        time_parentkeys=None, time_childkeys=None
     ):
     """Callback when header selector changes value.
     Select run to be displayed or real time mode.
@@ -137,6 +138,12 @@ def _on_header_select_change(
         Storage of all the displays for later update.
     widgets : dict
         Storage of all the widgets for later use and update.
+    time_parentkeys : list of strings, optional
+        Parentkeys of data that can be time ordered.
+        Default is ``None``, meaning nothing to be sorted.
+    time_childkeys : list of strings, optional
+        Childkeys of data that can be time ordered.
+        Default is ``None``, meaning nothing to be sorted.
 
     Returns
     -------
@@ -162,7 +169,7 @@ def _on_header_select_change(
         try:
             # real time will have to be replaced by ...data_fetch_helpers.fetch_stream()
             fobj, fpath = open_file_from_selection(
-                sel, ressource_path=ressource_path, real_time_tag=real_time_tag
+                sel, ressource_path=ressource_path, real_time_tag=real_time_tag,
             )
             # Update and start periodic updates
             update_all_figures(
@@ -197,7 +204,8 @@ def _on_header_select_change(
         try:
             widgets["PERIODIC_CB_ID"] = stop_periodic_updates(widgets)
             fobj, fpath = open_file_from_selection(
-                sel, ressource_path=ressource_path, real_time_tag=real_time_tag
+                sel, ressource_path=ressource_path, real_time_tag=real_time_tag,
+                time_parentkeys=time_parentkeys, time_childkeys=time_childkeys
             )
             # issue with opening the specific file
             if fobj is None:
