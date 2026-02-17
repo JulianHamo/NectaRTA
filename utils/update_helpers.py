@@ -191,7 +191,7 @@ def start_periodic_updates(
         interval_ms
     )
     widgets["PERIODIC_CB_ID"] = periodic_cb_id
-    print(f"Periodic updates started (id={periodic_cb_id}, interval_ms={interval_ms})")
+    # print(f"Periodic updates started (id={periodic_cb_id}, interval_ms={interval_ms})")
     return periodic_cb_id
 
 
